@@ -1,0 +1,56 @@
+version: '3.8'
+services:
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./plugins:/opt/airflow/plugins
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=mysql://dhairya:Dhairya@01@mysql:3306/surf_api
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    depends_on:
+      - mysql
+      - postgres
+    networks:
+      - airflow-network
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      - MYSQL_DATABASE=surf_api_mysql
+      - MYSQL_USER=dhairya
+      - MYSQL_PASSWORD=Dhaiyra@01
+      - MYSQL_ROOT_PASSWORD=Dhaiyra@01
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - airflow-network
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=dhairya
+      - POSTGRES_PASSWORD=Dhairya@01
+      - POSTGRES_DB=surf_api_postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - airflow-network
+
+networks:
+  airflow-network:
+
+volumes:
+  mysql-data:
+  postgres-data:
